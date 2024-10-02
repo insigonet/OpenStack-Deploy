@@ -285,7 +285,9 @@ openstack server list --all-projects
 ```
 ```bash
 openstack user list
-openstack role assignment list --user b556681bd33341859b0c6cf44f1884d7 --names
+# Смотри по пользователю каким проектам и доменам он пренадлежит а также его роль
+openstack role assignment list --user b556681bd33341859b0c6cf44f1884d7
+# Выводим список VM которые в роекте ID
 openstack server list --project 32a6ef3d00db42f2b55455203a258853
 ```
 
