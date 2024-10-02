@@ -44,7 +44,7 @@ cat /etc/kolla/globals.yml
 - Включенные и отключенные сервисы
 
 ```bash
-cat /etc/kolla/inventory
+nano /etc/kolla/inventory
 ```
 
 > В инвентарном файле перечислены все узлы нашей OpenStack установки и указаны их роли.
