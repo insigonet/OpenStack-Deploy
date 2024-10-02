@@ -284,9 +284,12 @@ openstack security group rule list 4e096426-0d71-4b1d-b745-c787dcafff22
 openstack server list --all-projects
 ```
 ```bash
+# Выводим список пользователей
 openstack user list
+
 # Смотри по пользователю каким проектам и доменам он пренадлежит а также его роль
 openstack role assignment list --user b556681bd33341859b0c6cf44f1884d7
+
 # Выводим список VM которые в роекте ID
 openstack server list --project 32a6ef3d00db42f2b55455203a258853
 ```
