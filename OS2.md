@@ -122,14 +122,16 @@ openstack hypervisor list
 - Обновление контейнеров до новой конфигурации
 
 > Иногда возникает необходимость внести изменения в конфигурацию OpenStack. Я покажу это на примере изменения уровня логирования для сервиса Nova.
+>
+> В Kolla-Ansible изменения напрямую в файлах конфигурации сервисов не применяются
+> Для изменения конфигурации необходимо использовать механизм переопределения конфигурации с помощью дополнительных файлов конфигов.
 
 ```bash
-sudo nano /etc/kolla/nova-compute/nova.conf
+mkdir -p /etc/kolla/config/nova/
+sudo nano /etc/kolla/config/nova/nova-compute.conf
 ```
 
-> Мы открываем конфигурационный файл Nova для редактирования.*
-> 
-> В файле `nova.conf` мы находим параметр `debug` и устанавливаем его значение на `true`:
+> Мы открываем конфигурационный файл Nova для редактирования и добавляем новые параменты для `debug` и устанавливаем его значение на `true`:
 
 ```ini
 [DEFAULT]
@@ -143,6 +145,28 @@ kolla-ansible -i /etc/kolla/inventory reconfigure -t nova
 
 > Kolla-Ansible применит изменения конфигурации для сервиса Nova и перезапустит соответствующие контейнеры. Это происходит без простоя других сервисов.
 > Флаг `-t nova` указывает, что мы хотим применить изменения только для сервиса Nova.*
+
+```bash
+sudo docker exec nova_compute grep debug /etc/nova/nova.conf
+```
+> Тут мы можетм видеть что параментры применены
+
+** Дополнительно **
+```bash
+sudo nano /etc/kolla/config/nova.conf
+
+sudo docker exec -it nova_compute bash
+grep debug /etc/nova/nova.conf
+exit
+
+sudo docker exec -it nova_api bash
+grep debug /etc/nova/nova.conf
+exit
+
+sudo docker exec -it nova_scheduler bash
+grep debug /etc/nova/nova.conf
+exit
+```
 
 ---
 ### **Слайд 5: «Мониторинг и логирование в OpenStack»**
@@ -204,7 +228,7 @@ openstack server show 4ba83d07-1c3b-4774-8ed7-853a5c654a36
 > Для примера мы загрузим новый образ операционной системы в сервис Glance для использования при создании виртуальных машин.
 
 ```bash
-openstack image create --disk-format qcow2 --container-format bare --file noble-server-cloudimg-amd64.img Ubuntu-24.04v2
+openstack image create --disk-format qcow2 --container-format bare --file ./ISO/noble-server-cloudimg-amd64.img Ubuntu-24.04v2
 ```
 
 > Мы загрузили новый образ `Ubuntu-24.04v2` и он доступен для использования.
@@ -227,16 +251,15 @@ openstack image list
 ```bash
 openstack network list
 ```
-
 > Команда показывает список сетей, доступных в OpenStack. Например, сеть `external_network`.
 
 ```bash
 openstack security group list
 ```
-> Мы видим список групп безопасности, включая группу с ID `7c4afa9a-ec8f-478e-ae4f-67b2195d5180`, которую будем использовать при создании виртуальной машины.
+> Мы видим список групп безопасности, включая группу с ID `4e096426-0d71-4b1d-b745-c787dcafff22`, которую будем использовать при создании виртуальной машины.
 
 ```bash
-openstack security group rule list 7c4afa9a-ec8f-478e-ae4f-67b2195d5180
+openstack security group rule list 4e096426-0d71-4b1d-b745-c787dcafff22
 ```
 Команда отображает все правила, связанные с данной группой безопасности. Мы можем увидеть разрешенные входящие и исходящие порты, протоколы и направления трафика.
 
@@ -248,13 +271,11 @@ openstack security group rule list 7c4afa9a-ec8f-478e-ae4f-67b2195d5180
 - Управление виртуальными машинами HostBill через CLI
 - Практические команды для диагностики
 
-**Текст презентации:**
-
-> Наш OpenStack интегрирован с системой биллинга HostBill, что позволяет автоматизировать процесс создания виртуальных машин для пользователей.
+> Наш OpenStack интегрирован с системой биллинга HostBill, это позволяет автоматизировать процесс создания виртуальных машин для пользователей из личного кабинета на OpenStack.
 
 **Создание виртуальной машины из HostBill:**
 
-> Сейчас я продемонстрирую создание виртуальной машины из панели HostBill. После создания мы сможем управлять этой VM через OpenStack CLI.
+> Сейчас мы создадимю виртуальную машину из панели HostBill и после создания мы сможем управлять этой VM через OpenStack CLI.
 
 **Создаем виртуальную машину в HostBill:**
 
@@ -285,7 +306,7 @@ openstack user list
 ```bash
 openstack role assignment list --user b556681bd33341859b0c6cf44f1884d7 --names
 ```
-> Команда показывает, в каких проектах или доменах этот пользователь имеет определённые роли
+> Команда показывает, какие проекты, доменах и роли имеет этот пользователь
 
 ```bash
 openstack server list --project 32a6ef3d00db42f2b55455203a258853
@@ -299,6 +320,33 @@ openstack server list --all-projects
 ```
 > Команда показывает все виртуальные машины, включая только что созданную из HostBill.
 
+```bash
+openstack console log show vm-demo
+```
+> Эта команда выводит консольные логи виртуальной машины
+
+```bash
+openstack console url show vm-demo
+```
+> Команда выводит URL для доступа к консоли виртуальной машины через веб-браузер
+
+***Команды для управления виртуальной машиной:***
+```bash
+# Остановка:
+openstack server stop vm-demo
+
+# Запуск:
+openstack server start vm-demo
+
+# Перезагрузка:
+openstack server reboot vm-demo
+Текст после команд:
+
+Уудаления виртуальной машины:
+openstack server delete vm-demo
+```
+
+***Дополнительно***
 ```bash
 openstack user list
 openstack role assignment list --user b556681bd33341859b0c6cf44f1884d7 --names
