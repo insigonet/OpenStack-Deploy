@@ -1,3 +1,11 @@
+### **Настрока HostBill в разделе Form Fild**
+> Во вкладке Advanced прописываем packages в поле Variable name
+>
+> Во вкладке Advanced включаем Show in cart
+>
+> При добавлении чекбокса задаеам его имя и в поле Value passed to App указываем имя переменной
+
+
 ```
 #cloud-config
 ssh_pwauth: true
