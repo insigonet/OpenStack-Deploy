@@ -1,3 +1,4 @@
+```
 #cloud-config
 ssh_pwauth: true
 user: root
@@ -13,4 +14,5 @@ packages:
   - fio
 {/if}
 {/foreach}
+```
 
