@@ -67,8 +67,13 @@ sudo apt install -y chrony
 # Задаем имя хоста
 sudo hostnamectl set-hostname w1-i-node-02
 
+# Создаем файл для отключения сетевой конфигурации cloud-init:
+sudo bash -c 'cat << EOF > /etc/netplan/99-cloud-init.yaml
+network: {config: disabled}
+EOF'
+
 # Настраиваем сеть через netplan
-sudo bash -c 'cat << EOF > /etc/netplan/50-cloud-init.yaml
+sudo bash -c 'cat << EOF > /etc/netplan/01-cloud-init.yaml
 network:
     ethernets:
         ens20f0: {}
@@ -91,6 +96,10 @@ network:
             id: 2924
             link: ens20f1
 EOF'
+
+# Удаляем старый конфиг
+sudo rm /etc/netplan/01-cloud-init.yaml
+
 
 # Применяем настройки сети
 sudo netplan apply
