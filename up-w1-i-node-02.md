@@ -80,7 +80,7 @@ network:
         ens20f1: {}
     version: 2
     vlans:
-        ens20f0.2059:
+        vlan2059:
             addresses:
             - 10.64.92.102/24
             id: 2059
@@ -92,7 +92,7 @@ network:
             routes:
             -   to: default
                 via: 10.64.92.254
-        ens20f1.2924:
+        vlan2924:
             id: 2924
             link: ens20f1
 EOF'
