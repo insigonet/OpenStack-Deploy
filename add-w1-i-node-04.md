@@ -106,7 +106,10 @@ sudo systemctl status chrony
 
 ```bash
 # Копируем SSH ключи с w1-i-node-02 на новый узел
-scp ~/.ssh/id_rsa* master@w1-i-node-04:~/.ssh/
+ssh-copy-id -i ~/.ssh/id_rsa.pub master@w1-i-node-04
+
+№ Проверяем соединие
+ssh master@w1-i-node-04 'echo "SSH доступ настроен"'
 ```
 
 #### Обновляем ключи на всех узлах
@@ -157,11 +160,6 @@ w1-i-node-03
 w1-i-node-04
 ```
 
-```bash
-# Проверяем настройки в globals.yml
-nano /etc/kolla/globals.yml
-```
-
 ---
 
 ### Добавление нового сервера в кластер
@@ -173,11 +171,11 @@ source ~/venv/bin/activate
 # Проверяем доступность всех узлов
 ansible -i /etc/kolla/inventory all -m ping
 
-# Подготавливаем новый узел
-kolla-ansible -i /etc/kolla/inventory bootstrap-servers
+# Подготавливаем новый узел w1-i-node-04
+kolla-ansible -i /etc/kolla/inventory --limit w1-i-node-04 bootstrap-servers
 
 # Проверяем конфигурацию перед развертыванием
-kolla-ansible -i /etc/kolla/inventory prechecks
+kolla-ansible -i /etc/kolla/inventory --limit w1-i-node-04 prechecks
 
 # Развертываем на всех узлах, включая новый сервер
 kolla-ansible -i /etc/kolla/inventory deploy
@@ -188,11 +186,15 @@ kolla-ansible -i /etc/kolla/inventory post-deploy
 
 ---
 
-### Проверка состояния и финальная настройка
+### Проверка состояния и финальная настройка сервера w1-i-node-04
+
+```bash
+# Добавляем пользователя в группу Docker и обновляем группу
+sudo usermod -aG docker $USER && newgrp docker
+```
 
 ```bash
 # Проверяем контейнеры на новом узле
-ssh master@w1-i-node-04
 docker ps
 ```
 
@@ -202,4 +204,3 @@ docker ps
 
 --- 
 
-Теперь добавлены все шаги по настройке и копированию SSH ключей, а также их обновление на всех узлах.
