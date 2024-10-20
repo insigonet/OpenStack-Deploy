@@ -209,6 +209,12 @@ openstack network agent list
 ### Финальная настройка сервера w1-i-node-03
 
 ```bash
+# Создаем группу kolla-admins и даем необходимые права
+sudo groupadd kolla-admins
+sudo chown -R root:kolla-admins /etc/kolla
+sudo chmod -R 770 /etc/kolla
+sudo usermod -aG kolla-admins master
+
 # Добавляем пользователя в группу Docker и обновляем группу
 sudo usermod -aG docker $USER && newgrp docker
 ```
