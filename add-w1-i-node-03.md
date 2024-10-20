@@ -3,7 +3,7 @@
     - [Настройка sudo без пароля](#настройка-sudo-без-пароля)
     - [Обновление системы и установка необходимых пакетов](#обновление-системы-и-установка-необходимых-пакетов)
     - [Настройка сети](#настройка-сети)
-    - [Установка Chrony для синхронизации времени](#установка-chrony-для-синхронизации-времени)
+    - [Установка и настрока Chrony для синхронизации времени](#установка и настрока Chrony для синхронизации времени)
 2. [Настройка SSH ключей](#настройка-ssh-ключей)
 3. [Настройка файла /etc/hosts на всех серверах](#настройка-файла-etchosts-на-всех-серверах)
 4. [Обновление inventory и globals.yml на сервере деплоя](#обновление-inventory-и-globalsyml-на-сервере-деплоя)
@@ -37,9 +37,6 @@ sudo apt update && sudo apt upgrade -y
 
 # Если требуется перезагрузка, выполняем её
 [ -f /var/run/reboot-required ] && sudo systemctl reboot
-
-# Устанавливаем необходимые пакеты
-sudo apt install -y git chrony
 ```
 
 ---
@@ -50,17 +47,22 @@ sudo apt install -y git chrony
 # Задаем имя хоста
 sudo hostnamectl set-hostname w1-i-node-03
 
+# Создаем файл для отключения сетевой конфигурации cloud-init:
+sudo bash -c 'cat << EOF > /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
+network: {config: disabled}
+EOF'
+
 # Настраиваем сеть через netplan
-sudo bash -c 'cat << EOF > /etc/netplan/50-cloud-init.yaml
+sudo bash -c 'cat << EOF > /etc/netplan/01-cloud-init.yaml
 network:
     ethernets:
         ens20f0: {}
         ens20f1: {}
     version: 2
     vlans:
-        ens20f0.2059:
+        vlan2059:
             addresses:
-            - 10.64.92.104/24
+            - 10.64.92.103/24
             id: 2059
             link: ens20f0
             nameservers:
@@ -70,10 +72,16 @@ network:
             routes:
             -   to: default
                 via: 10.64.92.254
-        ens20f1.2924:
+        vlan2924:
             id: 2924
             link: ens20f1
 EOF'
+
+# Удаляем старый конфиг
+sudo rm /etc/netplan/50-cloud-init.yaml
+
+# Устанавливаемс права на 01-cloud-init.yaml
+sudo chmod 600 /etc/netplan/01-cloud-init.yaml
 
 # Применяем настройки сети
 sudo netplan apply
@@ -81,21 +89,30 @@ sudo netplan apply
 
 ---
 
-#### Установка Chrony для синхронизации времени
+#### Установка и настрока Chrony для синхронизации времени
 
 ```bash
+# Устанавливаем необходимые пакеты
+sudo apt install -y git chrony
+
+# Настраиваем временную зону
+sudo timedatectl set-timezone Europe/Kiev
+
 # Настраиваем Chrony для синхронизации с другими узлами
 sudo bash -c 'cat << EOF > /etc/chrony/chrony.conf
 server w1-i-node-02 iburst
-server w1-i-node-03 iburst
+server pool.ntp.org iburst
 EOF'
 
 # Включаем и запускаем Chrony
 sudo systemctl enable chrony
-sudo systemctl start chrony
+sudo systemctl restart chrony
 
 # Проверяем статус службы
 sudo systemctl status chrony
+
+# Проверка состояния источников времени и текущего состояния синхронизации:
+chronyc sources && chronyc tracking
 ```
 
 ---
