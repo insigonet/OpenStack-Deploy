@@ -317,7 +317,7 @@ openstack network set --mtu 1500 external_network
 ### Создание flavor в OpenStack
 
 ```bash
-# Создаем бфзовые flavor для виртуальных машин
+# Создаем базовые flavor для виртуальных машин
 openstack flavor create --id 101 --vcpus 2 --ram 4096 --disk 40 2vCPU_4RAM_40SSD
 openstack flavor create --id 102 --vcpus 4 --ram 8192 --disk 80 4vCPU_8RAM_80SSD
 
