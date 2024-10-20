@@ -96,9 +96,8 @@ logdir /var/log/chrony
 maxupdateskew 100.0
 EOF'
 
-# Включаем и запускаем Chrony
-sudo systemctl enable chrony
-sudo systemctl restart chrony
+# # Включаем и запускаем Chrony
+sudo systemctl enable chrony && sudo systemctl restart chrony
 
 # Проверяем статус службы
 sudo systemctl status chrony
