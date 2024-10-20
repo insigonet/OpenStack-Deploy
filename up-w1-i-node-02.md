@@ -68,7 +68,7 @@ sudo apt install -y chrony
 sudo hostnamectl set-hostname w1-i-node-02
 
 # Создаем файл для отключения сетевой конфигурации cloud-init:
-sudo bash -c 'cat << EOF > /etc/netplan/99-cloud-init.yaml
+sudo bash -c 'cat << EOF > /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
 network: {config: disabled}
 EOF'
 
@@ -98,8 +98,10 @@ network:
 EOF'
 
 # Удаляем старый конфиг
-sudo rm /etc/netplan/01-cloud-init.yaml
+sudo rm /etc/netplan/50-cloud-init.yaml
 
+# Устанавливаемс права на 01-cloud-init.yaml
+sudo chmod 600 /etc/netplan/01-cloud-init.yaml
 
 # Применяем настройки сети
 sudo netplan apply
@@ -183,7 +185,7 @@ ssh master@w1-i-node-02 'echo "SSH доступ настроен"'
 nano /etc/kolla/inventory
 ```
 
-Добавляем следующие параметры:
+Меняем следующие параметры:
 
 ```ini
 [control]
@@ -197,6 +199,9 @@ w1-i-node-02
 
 [monitoring]
 w1-i-node-02
+
+[storage]
+Не задаем
 ```
 
 ---
@@ -280,8 +285,7 @@ pip install python-openstackclient -c https://releases.openstack.org/constraints
 
 ```bash
 # Активируем виртуальное окружение и загружаем переменные среды
-source ~/venv/bin/activate
-source /etc/kolla/admin-openrc.sh
+source ~/venv/bin/activate && source /etc/kolla/admin-openrc.sh
 ```
 
 ```bash
