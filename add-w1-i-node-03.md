@@ -8,8 +8,7 @@
 2. [Настройка SSH ключей](#настройка-ssh-ключей)
 3. [Обновление inventory и globals.yml на сервере деплоя](#обновление-inventory-и-globalsyml-на-сервере-деплоя)
 4. [Добавление нового сервера в кластер](#добавление-нового-сервера-в-кластер)
-5. [Проверка состояния и финальная настройка](#проверка-состояния-и-финальная-настройка)
-
+5. [Финальная настройка сервера w1-i-node-03](#финальная-настройка-сервера-w1-i-node-03)
 ---
 
 ### Подготовка сервера w1-i-node-03
@@ -84,7 +83,10 @@ sudo rm /etc/netplan/50-cloud-init.yaml
 sudo chmod 600 /etc/netplan/01-cloud-init.yaml
 
 # Применяем настройки сети
-sudo netplan apply
+# sudo netplan apply
+
+# Перезагружаем
+sudo reboot
 ```
 
 ---
@@ -179,7 +181,7 @@ w1-i-node-03
 
 ---
 
-### Добавление нового сервера в кластер
+### Добавление нового сервера в кластер на сервере деплоя
 
 ```bash
 # Активируем виртуальное окружение
@@ -197,22 +199,18 @@ kolla-ansible -i /etc/kolla/inventory --limit w1-i-node-03 prechecks
 # Развертываем на всех узлах, включая новый сервер
 kolla-ansible -i /etc/kolla/inventory deploy
 
-# Выполняем постразвертывание
-kolla-ansible -i /etc/kolla/inventory post-deploy
+# Выводим список сервисов Compute и агентов сети
+openstack compute service list
+openstack network agent list
 ```
 
 ---
 
-### Проверка состояния и финальная настройка сервера w1-i-node-03
+### Финальная настройка сервера w1-i-node-03
 
 ```bash
 # Добавляем пользователя в группу Docker и обновляем группу
 sudo usermod -aG docker $USER && newgrp docker
-```
-
-```bash
-# Проверяем контейнеры на новом узле
-docker ps
 ```
 
 ---
