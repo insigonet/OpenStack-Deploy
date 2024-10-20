@@ -1,5 +1,5 @@
 ## Содержание:
-1. [Подготовка сервера w1-i-node-04](#подготовка-сервера-w1-i-node-04)
+1. [Подготовка сервера w1-i-node-03](#подготовка-сервера-w1-i-node-03)
     - [Настройка sudo без пароля](#настройка-sudo-без-пароля)
     - [Обновление системы и установка необходимых пакетов](#обновление-системы-и-установка-необходимых-пакетов)
     - [Настройка сети](#настройка-сети)
@@ -12,7 +12,7 @@
 
 ---
 
-### Подготовка сервера w1-i-node-04
+### Подготовка сервера w1-i-node-03
 
 #### Настройка sudo без пароля
 
@@ -48,7 +48,7 @@ sudo apt install -y git chrony
 
 ```bash
 # Задаем имя хоста
-sudo hostnamectl set-hostname w1-i-node-04
+sudo hostnamectl set-hostname w1-i-node-03
 
 # Настраиваем сеть через netplan
 sudo bash -c 'cat << EOF > /etc/netplan/50-cloud-init.yaml
@@ -106,17 +106,17 @@ sudo systemctl status chrony
 
 ```bash
 # Копируем SSH ключи с w1-i-node-02 на новый узел
-ssh-copy-id -i ~/.ssh/id_rsa.pub master@w1-i-node-04
+ssh-copy-id -i ~/.ssh/id_rsa.pub master@w1-i-node-03
 
 № Проверяем соединие
-ssh master@w1-i-node-04 'echo "SSH доступ настроен"'
+ssh master@w1-i-node-03 'echo "SSH доступ настроен"'
 ```
 
 #### Обновляем ключи на всех узлах
 
 ```bash
 # Добавляем SSH ключи всех узлов в known_hosts на всех серверах
-ssh-keyscan w1-i-node-02 w1-i-node-03 w1-i-node-04 >> ~/.ssh/known_hosts
+ssh-keyscan w1-i-node-02 w1-i-node-03 w1-i-node-03 >> ~/.ssh/known_hosts
 
 # Удаляем дублирующиеся записи
 sort -u ~/.ssh/known_hosts -o ~/.ssh/known_hosts
@@ -132,7 +132,6 @@ sudo bash -c 'cat << EOF > /etc/hosts
 127.0.0.1 localhost
 10.64.92.102 w1-i-node-02
 10.64.92.103 w1-i-node-03
-10.64.92.104 w1-i-node-04
 10.64.92.110 os2.fiberax.online
 EOF'
 ```
@@ -146,18 +145,16 @@ EOF'
 nano /etc/kolla/inventory
 ```
 
-Добавляем `w1-i-node-04`:
+Добавляем `w1-i-node-03`:
 
 ```ini
 [network]
 w1-i-node-02
 w1-i-node-03
-w1-i-node-04
 
 [compute]
 w1-i-node-02
 w1-i-node-03
-w1-i-node-04
 ```
 
 ---
@@ -171,11 +168,11 @@ source ~/venv/bin/activate
 # Проверяем доступность всех узлов
 ansible -i /etc/kolla/inventory all -m ping
 
-# Подготавливаем новый узел w1-i-node-04
-kolla-ansible -i /etc/kolla/inventory --limit w1-i-node-04 bootstrap-servers
+# Подготавливаем новый узел w1-i-node-03
+kolla-ansible -i /etc/kolla/inventory --limit w1-i-node-03 bootstrap-servers
 
 # Проверяем конфигурацию перед развертыванием
-kolla-ansible -i /etc/kolla/inventory --limit w1-i-node-04 prechecks
+kolla-ansible -i /etc/kolla/inventory --limit w1-i-node-03 prechecks
 
 # Развертываем на всех узлах, включая новый сервер
 kolla-ansible -i /etc/kolla/inventory deploy
@@ -186,7 +183,7 @@ kolla-ansible -i /etc/kolla/inventory post-deploy
 
 ---
 
-### Проверка состояния и финальная настройка сервера w1-i-node-04
+### Проверка состояния и финальная настройка сервера w1-i-node-03
 
 ```bash
 # Добавляем пользователя в группу Docker и обновляем группу
@@ -200,7 +197,7 @@ docker ps
 
 ---
 
-Новый сервер `w1-i-node-04` подготовлен и добавлен в кластер OpenStack.
+Новый сервер `w1-i-node-03` подготовлен и добавлен в кластер OpenStack.
 
 --- 
 
