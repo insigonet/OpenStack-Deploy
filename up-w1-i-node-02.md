@@ -13,7 +13,9 @@
 7. [Развертывание OpenStack](#развертывание-openstack)
 8. [Установка OpenStack CLI](#установка-openstack-cli)
 9. [Создание сети и настроек OpenStack](#создание-сети-и-настроек-openstack)
-10. [Финальная настройка сервера](#финальная-настройка-сервера)
+10. [Создание flavor в OpenStack](#создание-flavor-в-openstack)
+11. [Настройка security group](#настройка-security-group)
+12. [Финальная настройка сервера](#финальная-настройка-сервера)
 
 ---
 
@@ -308,6 +310,57 @@ openstack subnet create --network external_network \
 ```bash
 # Устанавливаем MTU для внешней сети
 openstack network set --mtu 1500 external_network
+```
+
+---
+
+### Создание flavor в OpenStack
+
+```bash
+# Создаем бфзовые flavor для виртуальных машин
+openstack flavor create --id 101 --vcpus 2 --ram 4096 --disk 40 2vCPU_4RAM_40SSD
+openstack flavor create --id 102 --vcpus 4 --ram 8192 --disk 80 4vCPU_8RAM_80SSD
+
+# Пример создания flavor с дополнительными свойствами
+openstack flavor create \
+  --id 201 \
+  --vcpus 2 \
+  --ram 4096 \
+  --disk 40 \
+  x86_vm_start \
+  --property ':architecture'='x86_architecture' \
+  --property ':category'='general_purpose' \
+  --property 'hw:mem_page_size'='any' \
+  --property 'hw:numa_nodes'='1' \
+  --property 'quota:disk_total_iops_sec'='5000' \
+  --property 'quota:vif_inbound_average'='12500' \
+  --property 'quota:vif_outbound_average'='12500'
+
+openstack flavor create \
+  --id 202 \
+  --vcpus 4 \
+  --ram 8192 \
+  --disk 80 \
+  x86_vm_standart \
+  --property ':architecture'='x86_architecture' \
+  --property ':category'='general_purpose' \
+  --property 'hw:mem_page_size'='any' \
+  --property 'hw:numa_nodes'='1' \
+  --property 'quota:disk_total_iops_sec'='10000' \
+  --property 'quota:vif_inbound_average'='125000' \
+  --property 'quota:vif_outbound_average'='125000'
+```
+
+---
+
+### Настройка security group
+
+```bash
+# Разрешаем весь входящий трафик для security group по умолчанию
+openstack security group rule create --protocol any --ingress default
+
+# Проверяем текущие правила security group
+openstack security group show default
 ```
 
 ---
