@@ -119,8 +119,7 @@ server pool.ntp.org iburst
 EOF'
 
 # Включаем и запускаем Chrony
-sudo systemctl enable chrony
-sudo systemctl restart chrony
+sudo systemctl enable chrony && sudo systemctl restart chrony
 
 # Проверяем статус службы
 sudo systemctl status chrony
@@ -136,18 +135,22 @@ chronyc sources && chronyc tracking
 #### Добавляем существующие ключи на новый сервер
 
 ```bash
-# Копируем SSH ключи с w1-i-node-02 на новый узел
+# Устанавливаем и копируем SSH ключи с w1-i-node-02 на новый узел
 ssh-copy-id -i ~/.ssh/id_rsa.pub master@w1-i-node-03
+scp -P 22 ~/.ssh/id_rsa* master@w1-i-node-03:~/.ssh/
 
-№ Проверяем соединие
+# Проверяем соединие с w1-i-node-02 на новый узел
 ssh master@w1-i-node-03 'echo "SSH доступ настроен"'
+
+# Проверяем обратное соединие с w1-i-node-03 на сервер деплоя
+ssh master@w1-i-node-02 'echo "SSH доступ настроен"'
 ```
 
 #### Обновляем ключи на всех узлах
 
 ```bash
 # Добавляем SSH ключи всех узлов в known_hosts на всех серверах
-ssh-keyscan w1-i-node-02 w1-i-node-03 w1-i-node-03 >> ~/.ssh/known_hosts
+ssh-keyscan w1-i-node-02 w1-i-node-03 >> ~/.ssh/known_hosts
 
 # Удаляем дублирующиеся записи
 sort -u ~/.ssh/known_hosts -o ~/.ssh/known_hosts
