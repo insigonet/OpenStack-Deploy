@@ -83,7 +83,7 @@ keyfile /etc/chrony/chrony.keys
 driftfile /var/lib/chrony/chrony.drift
 ntsdumpdir /var/lib/chrony
 
-# Синхронизация времени с RTC каждые 11 минут
+# Синхронизация времени с RTC
 rtcsync
 
 # Настройка для корректировки больших отклонений при старте
