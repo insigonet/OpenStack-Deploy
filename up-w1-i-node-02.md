@@ -263,6 +263,7 @@ nano /etc/kolla/globals.yml
 Добавляем или изменяем следующие параметры:
 
 ```yaml
+---
 workaround_ansible_issue_8743: yes
 kolla_base_distro: "ubuntu"
 openstack_release: "2023.2"
