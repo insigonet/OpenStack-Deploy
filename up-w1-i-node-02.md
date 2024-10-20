@@ -2,7 +2,7 @@
 1. [Подготовка сервера w1-i-node-02](#подготовка-сервера-w1-i-node-02)
     - [Настройка sudo без пароля](#настройка-sudo-без-пароля)
     - [Обновление системы и установка необходимых пакетов](#обновление-системы-и-установка-необходимых-пакетов)
-    - [Настройка временной зоны и установка Chrony](#настройка-временной-зоны-и-установка-chrony)
+    - [Установка и настройка Chrony](#установка-и-настрока-Chrony-для-синхронизации-времени)
     - [Настройка сети](#настройка-сети)
     - [Настройка файла hosts](#настройка-файла-hosts)
 2. [Установка виртуального окружения и Kolla-Ansible](#установка-виртуального-окружения-и-kolla-ansible)
@@ -51,14 +51,60 @@ sudo apt install -y git python3-dev libffi-dev gcc libssl-dev
 
 ---
 
-#### Настройка временной зоны и установка Chrony
+#### Установка и настрока Chrony для синхронизации времени
 
 ```bash
+# Устанавливаем необходимые пакеты
+sudo apt install -y git chrony
+
 # Настраиваем временную зону
 sudo timedatectl set-timezone Europe/Kiev
 
-# Устанавливаем Chrony для синхронизации времени
-sudo apt install -y chrony
+# Настраиваем Chrony для синхронизации с другими узлами
+sudo bash -c 'cat << EOF > /etc/chrony/chrony.conf
+# Разрешаем синхронизацию времени для всех локальных сетей (частные IP-диапазоны)
+allow 10.0.0.0/8
+allow 172.16.0.0/12
+allow 192.168.0.0/16
+
+# Сервера для синхронизации с интернетом
+pool ntp.ubuntu.com        iburst maxsources 4
+pool 0.pool.ntp.org         iburst maxsources 2
+pool 1.pool.ntp.org         iburst maxsources 2
+pool 2.pool.ntp.org         iburst maxsources 2
+
+# Используем файлы конфигурации из стандартных директорий
+confdir /etc/chrony/conf.d
+sourcedir /etc/chrony/sources.d
+sourcedir /run/chrony-dhcp
+
+# Файлы для хранения ключей и дрейфа
+keyfile /etc/chrony/chrony.keys
+driftfile /var/lib/chrony/chrony.drift
+ntsdumpdir /var/lib/chrony
+
+# Синхронизация времени с RTC каждые 11 минут
+rtcsync
+
+# Настройка для корректировки больших отклонений при старте
+makestep 1 3
+
+# Логирование (если требуется)
+logdir /var/log/chrony
+
+# Запрет на внесение неправильных данных в системные часы
+maxupdateskew 100.0
+EOF'
+
+# Включаем и запускаем Chrony
+sudo systemctl enable chrony
+sudo systemctl restart chrony
+
+# Проверяем статус службы
+sudo systemctl status chrony
+
+# Проверка состояния источников времени и текущего состояния синхронизации:
+chronyc sources && chronyc tracking
 ```
 
 ---
