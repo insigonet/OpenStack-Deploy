@@ -477,9 +477,20 @@ docker ps
 
 ### Панели управления OpenStack
 
-- [Skyline - http://os2.fiberax.online:999](http://os2.fiberax.online:9999/)
+- [Skyline - http://os2.fiberax.online:9999](http://os2.fiberax.online:9999/)
 - [Horizon - http://os2.fiberax.online](http://os2.fiberax.online)
 - [OpenSearch - http://os2.fiberax.online:5601](http://os2.fiberax.online:5601/)
+
+Для Skyline и Horizon имя пользователя: admin
+Для OpenSearch имя пользователя: opensearch
+
+```bash
+# Получаем пароль:
+
+grep keystone_admin_password /etc/kolla/passwords.yml
+grep opensearch_dashboards_password /etc/kolla/passwords.yml
+```
+
 
 ---
 
