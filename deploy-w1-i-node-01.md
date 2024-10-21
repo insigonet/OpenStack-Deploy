@@ -16,7 +16,7 @@
 10. [Создание flavor в OpenStack](#создание-flavor-в-openstack)
 11. [Настройка security group](#настройка-security-group)
 12. [Назначение квот](#назначение-квот)
-13. [Добавляем SSH-ключ](#добавляем-ssh-ключ-для-проекта-admin)
+13. [Добавляем SSH-ключ](#добавляем-ssh-ключ-для-пользователя-admin)
 14. [Финальная настройка сервера](#финальная-настройка-сервера)
 15. [Панели управления OpenStack](#панели-управления-openstack)
 
@@ -327,6 +327,9 @@ kolla-ansible -i /etc/kolla/inventory post-deploy
 ### Установка OpenStack CLI
 
 ```bash
+# Активируем виртуальное окружение
+source ~/venv/bin/activate
+
 # Устанавливаем OpenStack CLI
 pip install python-openstackclient -c https://releases.openstack.org/constraints/upper/2023.2
 ```
@@ -338,15 +341,11 @@ pip install python-openstackclient -c https://releases.openstack.org/constraints
 ```bash
 # Активируем виртуальное окружение и загружаем переменные среды
 source ~/venv/bin/activate && source /etc/kolla/admin-openrc.sh
-```
 
-```bash
 # Создаем внешнюю сеть
 openstack network create --share --external --provider-network-type flat \
   --provider-physical-network physnet1 external_network
-```
 
-```bash
 # Создаем подсеть для внешней сети
 openstack subnet create --network external_network \
   --subnet-range 77.88.230.192/27 \
@@ -355,9 +354,7 @@ openstack subnet create --network external_network \
   --dhcp \
   --allocation-pool start=77.88.230.202,end=77.88.230.222 \
   external_subnet
-```
 
-```bash
 # Устанавливаем MTU для внешней сети
 openstack network set --mtu 1500 external_network
 ```
@@ -427,7 +424,6 @@ openstack security group show default
 source ~/venv/bin/activate && source /etc/kolla/admin-openrc.sh
 
 # Назначение квот для проекта admin
-
 openstack quota set --cores 100 --ram 102400 --instances 100 \
     --networks 100 --ports 100 --routers 100 --subnets 100 \
     --floating-ips 100 --secgroups 100 --secgroup-rules 100 \
@@ -463,13 +459,13 @@ openstack quota set --cores 100 --ram 102400 --instances 100 \
 
 ---
 
-### Добавляем SSH-ключ для проекта admin
+### Добавляем SSH-ключ для пользователя admin
 ```bash
 # Активируем виртуальное окружение и загружаем переменные среды
 source ~/venv/bin/activate && source /etc/kolla/admin-openrc.sh
 
 # Добавляем ssh ключ.
-openstack keypair create --project admin --public-key ~/.ssh/id_rsa.pub master-key
+openstack keypair create --user admin --public-key ~/.ssh/id_rsa.pub master-key
 ```
 
 ### Финальная настройка сервера
