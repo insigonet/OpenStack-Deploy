@@ -17,6 +17,7 @@
 11. [Настройка security group](#настройка-security-group)
 12. [Назначение квот](#Назначение-квот-для-проекта-admin)
 13. [Финальная настройка сервера](#финальная-настройка-сервера)
+14. [Панели управления OpenStack](#панели-управления-openstack)
 
 ---
 
@@ -445,6 +446,16 @@ sudo usermod -aG docker $USER && newgrp docker
 ```bash
 # Проверяем контейнеры на сервере
 docker ps
+```
+
+---
+
+### Панели управления OpenStack
+
+```text
+http://os2.fiberax.online:9999/
+http://os2.fiberax.online
+http://os2.fiberax.online:5601/
 ```
 
 ---
