@@ -152,7 +152,7 @@ EOF'
 # Удаляем старый конфиг
 sudo rm /etc/netplan/50-cloud-init.yaml
 
-# Устанавливаемс права на 01-cloud-init.yaml
+# Устанавливаем права на 01-cloud-init.yaml
 sudo chmod 600 /etc/netplan/01-cloud-init.yaml
 
 # Применяем настройки сети
