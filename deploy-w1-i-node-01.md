@@ -44,11 +44,11 @@ sudo visudo -c
 # Обновляем систему
 sudo apt update && sudo apt upgrade -y
 
-# Если требуется перезагрузка, выполняем её
+# Проверяем если требуется перезагрузка, выполняем её
 [ -f /var/run/reboot-required ] && sudo systemctl reboot
 
 # Устанавливаем необходимые пакеты
-sudo apt install -y git python3-dev libffi-dev gcc libssl-dev
+sudo apt install -y git python3-dev libffi-dev gcc libssl-dev git
 ```
 
 ---
@@ -57,7 +57,7 @@ sudo apt install -y git python3-dev libffi-dev gcc libssl-dev
 
 ```bash
 # Устанавливаем необходимые пакеты
-sudo apt install -y git chrony
+sudo apt install -y chrony
 
 # Настраиваем временную зону
 sudo timedatectl set-timezone Europe/Kiev
@@ -153,7 +153,10 @@ sudo rm /etc/netplan/50-cloud-init.yaml
 sudo chmod 600 /etc/netplan/01-cloud-init.yaml
 
 # Применяем настройки сети
-sudo netplan apply
+# sudo netplan apply
+
+# Перезагружаем
+sudo reboot
 ```
 
 ---
@@ -200,14 +203,10 @@ cp -r ~/venv/share/kolla-ansible/etc_examples/kolla/* /etc/kolla
 
 # Копируем файл инвентаря multinode
 cp ~/venv/share/kolla-ansible/ansible/inventory/multinode /etc/kolla/inventory
-```
 
-```bash
 # Устанавливаем зависимости Ansible Galaxy
 kolla-ansible install-deps
-```
 
-```bash
 # Генерируем пароли
 kolla-genpwd
 ```
@@ -222,6 +221,8 @@ ssh-keygen -t rsa
 
 # Настраиваем доступ по SSH на сервере
 ssh-copy-id -i ~/.ssh/id_rsa.pub master@w1-i-node-01
+
+# Проверяем доступ по SSH
 ssh master@w1-i-node-01 'echo "SSH доступ настроен"'
 ```
 
@@ -304,10 +305,10 @@ enable_cinder_backend_lvm: "no"
 # Активируем виртуальное окружение
 source ~/venv/bin/activate
 
-# Проверяем доступность узлов
+# Проверяем доступность узлов из файла inventory
 ansible -i /etc/kolla/inventory all -m ping
 
-# Подготавливаем узел
+# Подготавливаем узел из файла inventory
 kolla-ansible -i /etc/kolla/inventory bootstrap-servers
 
 # Проверяем конфигурацию перед развертыванием
