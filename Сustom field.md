@@ -58,5 +58,23 @@ runcmd:
     echo "findtime = 600" >> /etc/fail2ban/jail.local
   - systemctl restart fail2ban
 {/if}
+
+{if $package.variable_id == "docker_composer"}
+  # Установка Docker
+  - curl -fsSL https://get.docker.com -o get-docker.sh
+  - sh get-docker.sh
+  - systemctl enable docker
+  - systemctl start docker
+  
+  # Установка Docker Compose
+  - curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+  - chmod +x /usr/local/bin/docker-compose
+  - ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+  
+  # Установка Composer
+  - curl -sS https://getcomposer.org/installer | php
+  - mv composer.phar /usr/local/bin/composer
+{/if}
+
 ```
 
