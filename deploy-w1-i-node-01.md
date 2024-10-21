@@ -30,7 +30,7 @@
 # Настраиваем sudo без пароля
 echo "%sudo ALL=(ALL:ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/group_sudo_nopasswd
 
-# Устанавливаем правильные права на файл
+# Устанавливаем права на файл
 sudo chmod 0440 /etc/sudoers.d/group_sudo_nopasswd
 
 # Проверяем конфигурацию sudoers
