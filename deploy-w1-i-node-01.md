@@ -336,7 +336,7 @@ kolla-ansible -i /etc/kolla/inventory deploy
 ```
 
 ```bash
-# Выполняем постразвертывание
+# Выполняем пост-развертывание
 kolla-ansible -i /etc/kolla/inventory post-deploy
 ```
 
