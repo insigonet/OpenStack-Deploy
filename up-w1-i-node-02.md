@@ -413,18 +413,43 @@ openstack security group show default
 
 ---
 
-### Назначение квот для проекта admin
+### Назначение квот
 
 ```bash
-# Назначаем квоты
+# Назначение квот для проекта admin
+
 openstack quota set --cores 100 --ram 102400 --instances 100 \
     --networks 100 --ports 100 --routers 100 --subnets 100 \
     --floating-ips 100 --secgroups 100 --secgroup-rules 100 \
     --server-groups 100 --server-group-members 100 --rbac-policies 100 \
     --key-pairs 100 --injected-file-size 10240 --injected-path-size 255 \
-    --injected-files 100 --properties 128 --force admin && \
+    --injected-files 100 --properties 100 --subnetpools 100 \
+    --fixed-ips 100 --force admin && \
     openstack quota show admin
 ```
+
+### Описание ключевых параметров:
+
+- `--cores 100`: Лимит на количество vCPU.
+- `--ram 102400`: Лимит на объем оперативной памяти (в МБ).
+- `--instances 100`: Лимит на количество инстансов.
+- `--networks 100`: Лимит на количество сетей.
+- `--ports 100`: Лимит на количество портов.
+- `--routers 100`: Лимит на количество роутеров.
+- `--subnets 100`: Лимит на количество подсетей.
+- `--floating-ips 100`: Лимит на количество плавающих IP.
+- `--secgroups 100`: Лимит на количество групп безопасности.
+- `--secgroup-rules 100`: Лимит на количество правил безопасности.
+- `--server-groups 100`: Лимит на количество групп серверов.
+- `--server-group-members 100`: Лимит на количество членов групп серверов.
+- `--rbac-policies 100`: Лимит на количество RBAC политик.
+- `--key-pairs 100`: Лимит на количество ключевых пар.
+- `--injected-file-size 10240`: Максимальный размер инжектируемого файла (в байтах).
+- `--injected-path-size 255`: Максимальная длина пути инжектируемого файла.
+- `--injected-files 100`: Лимит на количество инжектируемых файлов.
+- `--properties 100`: Лимит на количество пользовательских свойств.
+- `--subnetpools 100`: Лимит на количество пулов подсетей.
+- `--fixed-ips 100`: Лимит на количество фиксированных IP.
 
 ---
 
