@@ -452,8 +452,8 @@ docker ps
 
 ### Панели управления OpenStack
 
-- [Horizon - http://os2.fiberax.online:9999](http://os2.fiberax.online:9999/)
-- [Skyline - http://os2.fiberax.online](http://os2.fiberax.online)
+- [Skyline - http://os2.fiberax.online:999](http://os2.fiberax.online:9999/)
+- [Horizon - http://os2.fiberax.online](http://os2.fiberax.online)
 - [OpenSearch - http://os2.fiberax.online:5601](http://os2.fiberax.online:5601/)
 
 ---
