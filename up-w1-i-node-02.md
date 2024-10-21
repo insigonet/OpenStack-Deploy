@@ -15,7 +15,8 @@
 9. [Создание сети и настроек OpenStack](#создание-сети-и-настроек-openstack)
 10. [Создание flavor в OpenStack](#создание-flavor-в-openstack)
 11. [Настройка security group](#настройка-security-group)
-12. [Финальная настройка сервера](#финальная-настройка-сервера)
+12. [Назначение квот](#Назначение-квот-для-проекта-admin)
+13. [Финальная настройка сервера](#финальная-настройка-сервера)
 
 ---
 
@@ -407,6 +408,21 @@ openstack security group rule create --protocol any --ingress default
 
 # Проверяем текущие правила security group
 openstack security group show default
+```
+
+---
+
+### Назначение квот для проекта admin
+
+```bash
+# Назначаем квоты
+openstack quota set --cores 100 --ram 102400 --instances 100 \
+    --networks 100 --ports 100 --routers 100 --subnets 100 \
+    --floating-ips 100 --secgroups 100 --secgroup-rules 100 \
+    --server-groups 100 --server-group-members 100 --rbac-policies 100 \
+    --key-pairs 100 --injected-file-size 10240 --injected-path-size 255 \
+    --injected-files 100 --properties 128 --force admin && \
+    openstack quota show admin
 ```
 
 ---
