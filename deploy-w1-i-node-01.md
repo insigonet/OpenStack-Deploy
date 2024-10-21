@@ -59,10 +59,10 @@ sudo apt install -y git python3-dev libffi-dev gcc libssl-dev git
 #### Установка и настрока Chrony для синхронизации времени
 
 ```bash
-# Устанавливаем необходимые пакеты
+# Устанавливаем chrony
 sudo apt install -y chrony
 
-# Настраиваем временную зону
+# Устанавливаем временную зону
 sudo timedatectl set-timezone Europe/Kiev
 
 # Настраиваем Chrony для синхронизации с другими узлами
@@ -101,7 +101,7 @@ logdir /var/log/chrony
 maxupdateskew 100.0
 EOF'
 
-# # Включаем и запускаем Chrony
+# Включаем и запускаем Chrony
 sudo systemctl enable chrony && sudo systemctl restart chrony
 
 # Проверяем статус службы
