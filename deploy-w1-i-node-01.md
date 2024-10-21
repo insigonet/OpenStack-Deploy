@@ -385,7 +385,7 @@ openstack network set --mtu 1500 external_network
 # Активируем виртуальное окружение и загружаем переменные среды
 source ~/venv/bin/activate && source /etc/kolla/admin-openrc.sh
 
-# Создаем flavor без дополнительныx свойствами
+# Создаем flavor без дополнительныx свойств
 openstack flavor create --id 101 --vcpus 4 --ram 8192 --disk 100 4vCPU_8RAM_80SSD
 
 # Созданем flavor с дополнительными свойствами
