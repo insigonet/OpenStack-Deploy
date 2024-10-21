@@ -298,8 +298,14 @@ enable_central_logging: "yes"
 enable_fluentd: "yes"
 enable_cinder: "no"
 enable_cinder_backend_lvm: "no"
+nova_instance_datadir_volume: "/mnt/md0/nova/"
+
 ```
 
+# Создаем директорию для Ephemeral Storage
+```bash
+sudo mkdir -p /mnt/md0/nova/
+```
 ---
 
 ### Развертывание OpenStack
