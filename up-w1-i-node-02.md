@@ -485,8 +485,10 @@ docker ps
 # Для Skyline и Horizon имя пользователя: admin
 # Для OpenSearch имя пользователя: opensearch
 
-# Получаем пароль:
+# Получаем пароль keystone для admin:
 grep keystone_admin_password /etc/kolla/passwords.yml
+
+# Получаем пароль для dashboard opensearch:
 grep opensearch_dashboards_password /etc/kolla/passwords.yml
 ```
 
