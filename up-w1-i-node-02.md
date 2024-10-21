@@ -1,5 +1,5 @@
 ## Содержание:
-1. [Подготовка сервера w1-i-node-02](#подготовка-сервера-w1-i-node-02)
+1. [Подготовка сервера w1-i-node-01](#подготовка-сервера-w1-i-node-01)
     - [Настройка sudo без пароля](#настройка-sudo-без-пароля)
     - [Обновление системы и установка необходимых пакетов](#обновление-системы-и-установка-необходимых-пакетов)
     - [Установка и настройка Chrony](#установка-и-настрока-Chrony-для-синхронизации-времени)
@@ -21,7 +21,7 @@
 
 ---
 
-### Подготовка сервера w1-i-node-02
+### Подготовка сервера w1-i-node-01
 
 #### Настройка sudo без пароля
 
@@ -114,7 +114,7 @@ chronyc sources && chronyc tracking
 
 ```bash
 # Задаем имя хоста
-sudo hostnamectl set-hostname w1-i-node-02
+sudo hostnamectl set-hostname w1-i-node-01
 
 # Создаем файл для отключения сетевой конфигурации cloud-init:
 sudo bash -c 'cat << EOF > /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
@@ -131,7 +131,7 @@ network:
     vlans:
         vlan2059:
             addresses:
-            - 10.64.92.102/24
+            - 10.64.92.101/24
             id: 2059
             link: ens20f0
             nameservers:
@@ -164,7 +164,7 @@ sudo netplan apply
 # Настраиваем файл hosts
 sudo bash -c 'cat << EOF > /etc/hosts
 127.0.0.1 localhost
-10.64.92.102 w1-i-node-02
+10.64.92.101 w1-i-node-01
 10.64.92.110 os2.fiberax.online
 EOF'
 ```
@@ -221,8 +221,8 @@ kolla-genpwd
 ssh-keygen -t rsa
 
 # Настраиваем доступ по SSH на сервере
-ssh-copy-id -i ~/.ssh/id_rsa.pub master@w1-i-node-02
-ssh master@w1-i-node-02 'echo "SSH доступ настроен"'
+ssh-copy-id -i ~/.ssh/id_rsa.pub master@w1-i-node-01
+ssh master@w1-i-node-01 'echo "SSH доступ настроен"'
 ```
 
 ---
@@ -238,16 +238,16 @@ nano /etc/kolla/inventory
 
 ```ini
 [control]
-w1-i-node-02
+w1-i-node-01
 
 [network]
-w1-i-node-02
+w1-i-node-01
 
 [compute]
-w1-i-node-02
+w1-i-node-01
 
 [monitoring]
-w1-i-node-02
+w1-i-node-01
 
 [storage]
 Не задаем
@@ -379,7 +379,7 @@ openstack flavor create \
   --property ':category'='general_purpose' \
   --property 'hw:mem_page_size'='any' \
   --property 'hw:numa_nodes'='1' \
-  --property 'quota:disk_total_iops_sec'='5000' \
+  --property 'quota:disk_total_iops_sec'='10000' \
   --property 'quota:vif_inbound_average'='12500' \
   --property 'quota:vif_outbound_average'='12500'
 
@@ -491,4 +491,4 @@ grep opensearch_dashboards_password /etc/kolla/passwords.yml
 
 ---
 
-Cервер `w1-i-node-02` подготовлен для работы как основной сервер OpenStack и сервер деплоя для дальнейшего добавления узлов в кластер.
+Cервер `w1-i-node-01` подготовлен для работы как основной сервер OpenStack и сервер деплоя для дальнейшего добавления узлов в кластер.
