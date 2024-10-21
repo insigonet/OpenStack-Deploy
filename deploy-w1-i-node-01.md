@@ -45,9 +45,11 @@ sudo visudo -c
 # Обновляем систему
 sudo apt update && sudo apt upgrade -y
 
-# Проверяем если требуется перезагрузка, выполняем её
+# Проверяем, если требуется перезагрузка, перезагрузит
 [ -f /var/run/reboot-required ] && sudo systemctl reboot
+```
 
+```bash
 # Устанавливаем необходимые пакеты
 sudo apt install -y git python3-dev libffi-dev gcc libssl-dev git
 ```
