@@ -302,8 +302,8 @@ nova_instance_datadir_volume: "/mnt/md0/nova/"
 
 ```
 
-# Создаем директорию для Ephemeral Storage
 ```bash
+# Создаем директорию для Ephemeral Storage
 sudo mkdir -p /mnt/md0/nova/
 ```
 ---
