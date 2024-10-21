@@ -313,19 +313,24 @@ sudo mkdir -p /mnt/md0/nova/
 ```bash
 # Активируем виртуальное окружение
 source ~/venv/bin/activate
-
+```
+```bash
 # Проверяем доступность узлов из файла inventory
 ansible -i /etc/kolla/inventory all -m ping
-
+```
+```bash
 # Подготавливаем узел из файла inventory
 kolla-ansible -i /etc/kolla/inventory bootstrap-servers
-
+```
+```bash
 # Проверяем конфигурацию перед развертыванием
 kolla-ansible -i /etc/kolla/inventory prechecks
-
+```
+```bash
 # Развертываем OpenStack
 kolla-ansible -i /etc/kolla/inventory deploy
-
+```
+```bash
 # Выполняем постразвертывание
 kolla-ansible -i /etc/kolla/inventory post-deploy
 ```
