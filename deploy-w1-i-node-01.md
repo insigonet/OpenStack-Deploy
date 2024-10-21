@@ -366,10 +366,13 @@ openstack network set --mtu 1500 external_network
 ### Создание flavor в OpenStack
 
 ```bash
-# Пример создания flavor без дополнительныx свойствами
-openstack flavor create --id 101 --vcpus 4 --ram 8192 --disk 80 4vCPU_8RAM_80SSD
+# Активируем виртуальное окружение и загружаем переменные среды
+source ~/venv/bin/activate && source /etc/kolla/admin-openrc.sh
 
-# Пример создания flavor с дополнительными свойствами
+# Создаем flavor без дополнительныx свойствами
+openstack flavor create --id 101 --vcpus 4 --ram 8192 --disk 100 4vCPU_8RAM_80SSD
+
+# Созданем flavor с дополнительными свойствами
 openstack flavor create \
   --id 201 \
   --vcpus 2 \
@@ -380,21 +383,21 @@ openstack flavor create \
   --property ':category'='general_purpose' \
   --property 'hw:mem_page_size'='any' \
   --property 'hw:numa_nodes'='1' \
-  --property 'quota:disk_total_iops_sec'='10000' \
-  --property 'quota:vif_inbound_average'='12500' \
-  --property 'quota:vif_outbound_average'='12500'
+  --property 'quota:disk_total_iops_sec'='20000' \
+  --property 'quota:vif_inbound_average'='62500' \
+  --property 'quota:vif_outbound_average'='62500'
 
 openstack flavor create \
   --id 202 \
   --vcpus 4 \
   --ram 8192 \
-  --disk 80 \
+  --disk 100 \
   x86_vm_standart \
   --property ':architecture'='x86_architecture' \
   --property ':category'='general_purpose' \
   --property 'hw:mem_page_size'='any' \
   --property 'hw:numa_nodes'='1' \
-  --property 'quota:disk_total_iops_sec'='10000' \
+  --property 'quota:disk_total_iops_sec'='30000' \
   --property 'quota:vif_inbound_average'='125000' \
   --property 'quota:vif_outbound_average'='125000'
 ```
@@ -404,6 +407,9 @@ openstack flavor create \
 ### Настройка security group
 
 ```bash
+# Активируем виртуальное окружение и загружаем переменные среды
+source ~/venv/bin/activate && source /etc/kolla/admin-openrc.sh
+
 # Разрешаем весь входящий трафик для security group по умолчанию
 openstack security group rule create --protocol any --ingress default
 
@@ -416,6 +422,9 @@ openstack security group show default
 ### Назначение квот
 
 ```bash
+# Активируем виртуальное окружение и загружаем переменные среды
+source ~/venv/bin/activate && source /etc/kolla/admin-openrc.sh
+
 # Назначение квот для проекта admin
 
 openstack quota set --cores 100 --ram 102400 --instances 100 \
@@ -452,6 +461,15 @@ openstack quota set --cores 100 --ram 102400 --instances 100 \
 - `--fixed-ips 100`: Лимит на количество фиксированных IP.
 
 ---
+
+### Добавляем SSH-ключ для проекта admin
+```bash
+# Активируем виртуальное окружение и загружаем переменные среды
+source ~/venv/bin/activate && source /etc/kolla/admin-openrc.sh
+
+# Добавляем ssh ключ.
+openstack keypair create --project admin --public-key ~/.ssh/id_rsa.pub master-key
+```
 
 ### Финальная настройка сервера
 
