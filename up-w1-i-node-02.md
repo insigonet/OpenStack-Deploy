@@ -482,13 +482,10 @@ docker ps
 - [OpenSearch - http://os2.fiberax.online:5601](http://os2.fiberax.online:5601/)
 
 ```bash
-# Для Skyline и Horizon имя пользователя: admin
-# Для OpenSearch имя пользователя: opensearch
-
-# Получаем пароль keystone для admin:
+# Получаем пароль Keystone для администратора admin:
 grep keystone_admin_password /etc/kolla/passwords.yml
 
-# Получаем пароль для dashboard opensearch:
+# Получаем пароль для OpenSearch для пользователя opensearch:
 grep opensearch_dashboards_password /etc/kolla/passwords.yml
 ```
 
