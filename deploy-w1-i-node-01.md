@@ -220,7 +220,7 @@ kolla-genpwd
 
 ```bash
 # Генерируем SSH ключ
-ssh-keygen -t rsa
+ssh-keygen -t rsa -b 4096 -f ~/.ssh/id_rsa -N ""
 
 # Настраиваем доступ по SSH на сервере
 ssh-copy-id -i ~/.ssh/id_rsa.pub master@w1-i-node-01
