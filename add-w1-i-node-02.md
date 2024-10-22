@@ -100,7 +100,7 @@ sudo bash -c 'cat << EOF > /etc/hosts
 127.0.0.1 localhost
 10.64.92.30  w1-os-service
 10.64.92.101 w1-i-node-01
-10.64.92.102 w1-i-node-01
+10.64.92.102 w1-i-node-02
 10.64.92.110 os2.fiberax.online
 EOF'
 ```
