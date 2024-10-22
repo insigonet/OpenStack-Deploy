@@ -5,6 +5,7 @@
     - [Установка и настройка Chrony](#установка-и-настрока-Chrony-для-синхронизации-времени)
     - [Настройка сети](#настройка-сети)
     - [Настройка файла hosts](#настройка-файла-hosts)
+    - [Смена пути Ephemeral Storage](#смена-пути-ephemeral-storage)
 2. [Установка виртуального окружения и Kolla-Ansible](#установка-виртуального-окружения-и-kolla-ansible)
 3. [Настройка Kolla-Ansible](#настройка-kolla-ansible)
 4. [Генерация SSH ключей и настройка доступа](#генерация-ssh-ключей-и-настройка-доступа)
@@ -175,6 +176,13 @@ sudo bash -c 'cat << EOF > /etc/hosts
 EOF'
 ```
 
+### Смена пути Ephemeral Storage
+
+```bash
+# Создаем директорию для Ephemeral Storage
+sudo mkdir -p /mnt/md0/nova/
+```
+
 ---
 
 ### Установка виртуального окружения и Kolla-Ansible
@@ -300,11 +308,6 @@ enable_cinder: "no"
 enable_cinder_backend_lvm: "no"
 nova_instance_datadir_volume: "/mnt/md0/nova/"
 
-```
-
-```bash
-# Создаем директорию для Ephemeral Storage
-sudo mkdir -p /mnt/md0/nova/
 ```
 ---
 
