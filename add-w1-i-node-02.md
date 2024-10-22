@@ -107,19 +107,52 @@ EOF'
 ---
 
 #### Установка и настрока Chrony для синхронизации времени
-
 ```bash
 # Устанавливаем chrony
-sudo apt install -y git chrony
+sudo apt install -y chrony
 
 # Устанавливаем временную зону
 sudo timedatectl set-timezone Europe/Kiev
 
+# Резервная копия файла
+sudo cp /etc/chrony/chrony.conf /etc/chrony/chrony.conf.bak
+
 # Настраиваем Chrony для синхронизации с другими узлами
 sudo bash -c 'cat << EOF > /etc/chrony/chrony.conf
-server w1-i-node-02 iburst
-server pool.ntp.org iburst
+# Локальный сервер для синхронизации
+server w1-i-node-01 iburst
+
+# Резервные серверы в интернете
+pool ntp.ubuntu.com         iburst maxsources 4
+pool 0.pool.ntp.org         iburst maxsources 2
+pool 1.pool.ntp.org         iburst maxsources 2
+pool 2.pool.ntp.org         iburst maxsources 2
+
+# Используем файлы конфигурации из стандартных директорий
+confdir /etc/chrony/conf.d
+sourcedir /etc/chrony/sources.d
+sourcedir /run/chrony-dhcp
+
+# Файлы для хранения ключей и дрейфа
+keyfile /etc/chrony/chrony.keys
+driftfile /var/lib/chrony/chrony.drift
+ntsdumpdir /var/lib/chrony
+
+# Синхронизация времени с RTC
+rtcsync
+
+# Настройка для корректировки больших отклонений при старте
+makestep 1 3
+
+# Логирование
+logdir /var/log/chrony
+
+# Запрет на внесение неправильных данных в системные часы
+maxupdateskew 100.0
 EOF'
+
+# Проверяем конфигурацию
+sudo chronyd -Q "server w1-i-node-01 iburst"
 
 # Включаем и запускаем Chrony
 sudo systemctl enable chrony && sudo systemctl restart chrony
