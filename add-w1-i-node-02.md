@@ -150,6 +150,9 @@ logdir /var/log/chrony
 maxupdateskew 100.0
 EOF'
 
+# Проверяем синхронизации времени
+sudo chronyd -Q "server w1-os-service iburst"
+
 # Включаем и запускаем Chrony
 sudo systemctl enable chrony && sudo systemctl restart chrony
 
