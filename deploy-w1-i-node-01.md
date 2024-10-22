@@ -56,6 +56,70 @@ sudo apt install -y git python3-dev libffi-dev gcc libssl-dev git
 ```
 
 ---
+#### Настройка файла hosts
+
+```bash
+# Настраиваем файл hosts
+sudo bash -c 'cat << EOF > /etc/hosts
+127.0.0.1 localhost
+10.64.92.30  w1-os-service
+10.64.92.101 w1-i-node-01
+10.64.92.110 os2.fiberax.online
+EOF'
+```
+
+---
+
+#### Настройка сети
+
+```bash
+# Задаем имя хоста
+sudo hostnamectl set-hostname w1-i-node-01
+
+# Создаем файл для отключения сетевой конфигурации cloud-init:
+sudo bash -c 'cat << EOF > /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
+network: {config: disabled}
+EOF'
+
+# Настраиваем сеть через netplan
+sudo bash -c 'cat << EOF > /etc/netplan/01-cloud-init.yaml
+network:
+    ethernets:
+        ens20f0: {}
+        ens20f1: {}
+    version: 2
+    vlans:
+        vlan2059:
+            addresses:
+            - 10.64.92.101/24
+            id: 2059
+            link: ens20f0
+            nameservers:
+                addresses:
+                - 8.8.8.8
+                - 1.1.1.1
+            routes:
+            -   to: default
+                via: 10.64.92.254
+        vlan2924:
+            id: 2924
+            link: ens20f1
+EOF'
+
+# Удаляем старый конфиг
+sudo rm /etc/netplan/50-cloud-init.yaml
+
+# Устанавливаем права на 01-cloud-init.yaml
+sudo chmod 600 /etc/netplan/01-cloud-init.yaml
+
+# Применяем настройки сети
+# sudo netplan apply
+
+# Перезагружаем
+sudo reboot
+```
+
+---
 
 #### Установка и настрока Chrony для синхронизации времени
 
@@ -115,69 +179,6 @@ chronyc sources && chronyc tracking
 ```
 
 ---
-
-#### Настройка сети
-
-```bash
-# Задаем имя хоста
-sudo hostnamectl set-hostname w1-i-node-01
-
-# Создаем файл для отключения сетевой конфигурации cloud-init:
-sudo bash -c 'cat << EOF > /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
-network: {config: disabled}
-EOF'
-
-# Настраиваем сеть через netplan
-sudo bash -c 'cat << EOF > /etc/netplan/01-cloud-init.yaml
-network:
-    ethernets:
-        ens20f0: {}
-        ens20f1: {}
-    version: 2
-    vlans:
-        vlan2059:
-            addresses:
-            - 10.64.92.101/24
-            id: 2059
-            link: ens20f0
-            nameservers:
-                addresses:
-                - 8.8.8.8
-                - 1.1.1.1
-            routes:
-            -   to: default
-                via: 10.64.92.254
-        vlan2924:
-            id: 2924
-            link: ens20f1
-EOF'
-
-# Удаляем старый конфиг
-sudo rm /etc/netplan/50-cloud-init.yaml
-
-# Устанавливаем права на 01-cloud-init.yaml
-sudo chmod 600 /etc/netplan/01-cloud-init.yaml
-
-# Применяем настройки сети
-# sudo netplan apply
-
-# Перезагружаем
-sudo reboot
-```
-
----
-
-#### Настройка файла hosts
-
-```bash
-# Настраиваем файл hosts
-sudo bash -c 'cat << EOF > /etc/hosts
-127.0.0.1 localhost
-10.64.92.30  w1-os-service
-10.64.92.101 w1-i-node-01
-10.64.92.110 os2.fiberax.online
-EOF'
-```
 
 ### Смена пути Ephemeral Storage
 
