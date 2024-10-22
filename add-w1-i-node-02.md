@@ -185,20 +185,20 @@ scp -P 22 ~/.ssh/id_rsa* master@w1-i-node-02:~/.ssh/
 # Проверяем соединие с w1-i-node-01 на новый узел
 ssh master@w1-i-node-02 'echo "SSH доступ настроен"'
 ```
-**Новый сервер**
-```bash
-# Проверяем обратное соединие с w1-i-node-02 на сервер деплоя
-ssh master@w1-i-node-02 'echo "SSH доступ настроен"'
-```
-
 #### Обновляем ключи на всех узлах
 
 ```bash
 # Добавляем SSH ключи всех узлов в known_hosts на всех серверах
-ssh-keyscan w1-i-node-02 w1-i-node-02 >> ~/.ssh/known_hosts
+ssh-keyscan w1-i-node-01 w1-i-node-02 >> ~/.ssh/known_hosts
 
 # Удаляем дублирующиеся записи
 sort -u ~/.ssh/known_hosts -o ~/.ssh/known_hosts
+```
+
+**Новый сервер**
+```bash
+# Проверяем обратное соединие с w1-i-node-02 на сервер деплоя
+ssh master@w1-i-node-02 'echo "SSH доступ настроен"'
 ```
 
 ---
