@@ -198,7 +198,7 @@ sort -u ~/.ssh/known_hosts -o ~/.ssh/known_hosts
 **Новый сервер**
 ```bash
 # Проверяем обратное соединие с w1-i-node-02 на сервер деплоя
-ssh master@w1-i-node-02 'echo "SSH доступ настроен"'
+ssh master@w1-i-node-01 'echo "SSH доступ настроен"'
 ```
 
 ---
