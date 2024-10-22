@@ -114,15 +114,10 @@ sudo apt install -y chrony
 # Устанавливаем временную зону
 sudo timedatectl set-timezone Europe/Kiev
 
-# Резервная копия файла
-sudo cp /etc/chrony/chrony.conf /etc/chrony/chrony.conf.bak
-
 # Настраиваем Chrony для синхронизации с другими узлами
 sudo bash -c 'cat << EOF > /etc/chrony/chrony.conf
-# Локальный сервер для синхронизации
-server w1-i-node-01 iburst
 
-# Резервные серверы в интернете
+# Сервера для синхронизации с интернетом
 pool ntp.ubuntu.com         iburst maxsources 4
 pool 0.pool.ntp.org         iburst maxsources 2
 pool 1.pool.ntp.org         iburst maxsources 2
@@ -151,9 +146,6 @@ logdir /var/log/chrony
 maxupdateskew 100.0
 EOF'
 
-# Проверяем конфигурацию
-sudo chronyd -Q "server w1-i-node-01 iburst"
-
 # Включаем и запускаем Chrony
 sudo systemctl enable chrony && sudo systemctl restart chrony
 
@@ -162,7 +154,6 @@ sudo systemctl status chrony
 
 # Проверка состояния источников времени и текущего состояния синхронизации:
 chronyc sources && chronyc tracking
-```
 
 ### Смена пути Ephemeral Storage
 
