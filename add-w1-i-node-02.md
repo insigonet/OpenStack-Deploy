@@ -1,5 +1,5 @@
 ## Содержание:
-1. [Подготовка сервера w1-i-node-03](#подготовка-сервера-w1-i-node-03)
+1. [Подготовка сервера w1-i-node-02](#подготовка-сервера-w1-i-node-02)
     - [Настройка sudo без пароля](#настройка-sudo-без-пароля)
     - [Обновление системы и установка необходимых пакетов](#обновление-системы-и-установка-необходимых-пакетов)
     - [Настройка сети](#настройка-сети)
@@ -8,10 +8,10 @@
 2. [Настройка SSH ключей](#настройка-ssh-ключей)
 3. [Обновление inventory и globals.yml на сервере деплоя](#обновление-inventory-и-globalsyml-на-сервере-деплоя)
 4. [Добавление нового сервера в кластер](#добавление-нового-сервера-в-кластер)
-5. [Финальная настройка сервера w1-i-node-03](#финальная-настройка-сервера-w1-i-node-03)
+5. [Финальная настройка сервера w1-i-node-02](#финальная-настройка-сервера-w1-i-node-02)
 ---
 
-### Подготовка сервера w1-i-node-03
+### Подготовка сервера w1-i-node-02
 
 #### Настройка sudo без пароля
 
@@ -44,7 +44,7 @@ sudo apt update && sudo apt upgrade -y
 
 ```bash
 # Задаем имя хоста
-sudo hostnamectl set-hostname w1-i-node-03
+sudo hostnamectl set-hostname w1-i-node-02
 
 # Создаем файл для отключения сетевой конфигурации cloud-init:
 sudo bash -c 'cat << EOF > /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
@@ -61,7 +61,7 @@ network:
     vlans:
         vlan2059:
             addresses:
-            - 10.64.92.103/24
+            - 10.64.92.102/24
             id: 2059
             link: ens20f0
             nameservers:
@@ -79,7 +79,7 @@ EOF'
 # Удаляем старый конфиг
 sudo rm /etc/netplan/50-cloud-init.yaml
 
-# Устанавливаемс права на 01-cloud-init.yaml
+# Устанавливаем права на 01-cloud-init.yaml
 sudo chmod 600 /etc/netplan/01-cloud-init.yaml
 
 # Применяем настройки сети
@@ -97,8 +97,8 @@ sudo reboot
 # Настраиваем файл hosts на всех узлах
 sudo bash -c 'cat << EOF > /etc/hosts
 127.0.0.1 localhost
-10.64.92.102 w1-i-node-02
-10.64.92.103 w1-i-node-03
+10.64.92.101 w1-i-node-01
+10.64.92.102 w1-i-node-01
 10.64.92.110 os2.fiberax.online
 EOF'
 ```
@@ -108,10 +108,10 @@ EOF'
 #### Установка и настрока Chrony для синхронизации времени
 
 ```bash
-# Устанавливаем необходимые пакеты
+# Устанавливаем chrony
 sudo apt install -y git chrony
 
-# Настраиваем временную зону
+# Устанавливаем временную зону
 sudo timedatectl set-timezone Europe/Kiev
 
 # Настраиваем Chrony для синхронизации с другими узлами
@@ -136,15 +136,18 @@ chronyc sources && chronyc tracking
 
 #### Добавляем существующие ключи на новый сервер
 
+**Сервер Deploy**
 ```bash
-# Устанавливаем и копируем SSH ключи с w1-i-node-02 на новый узел
-ssh-copy-id -i ~/.ssh/id_rsa.pub master@w1-i-node-03
-scp -P 22 ~/.ssh/id_rsa* master@w1-i-node-03:~/.ssh/
+# Устанавливаем и копируем SSH ключи с w1-i-node-01 на новый узел
+ssh-copy-id -i ~/.ssh/id_rsa.pub master@w1-i-node-02
+scp -P 22 ~/.ssh/id_rsa* master@w1-i-node-02:~/.ssh/
 
-# Проверяем соединие с w1-i-node-02 на новый узел
-ssh master@w1-i-node-03 'echo "SSH доступ настроен"'
-
-# Проверяем обратное соединие с w1-i-node-03 на сервер деплоя
+# Проверяем соединие с w1-i-node-01 на новый узел
+ssh master@w1-i-node-02 'echo "SSH доступ настроен"'
+```
+**Новый сервер**
+```bash
+# Проверяем обратное соединие с w1-i-node-02 на сервер деплоя
 ssh master@w1-i-node-02 'echo "SSH доступ настроен"'
 ```
 
@@ -152,7 +155,7 @@ ssh master@w1-i-node-02 'echo "SSH доступ настроен"'
 
 ```bash
 # Добавляем SSH ключи всех узлов в known_hosts на всех серверах
-ssh-keyscan w1-i-node-02 w1-i-node-03 >> ~/.ssh/known_hosts
+ssh-keyscan w1-i-node-02 w1-i-node-02 >> ~/.ssh/known_hosts
 
 # Удаляем дублирующиеся записи
 sort -u ~/.ssh/known_hosts -o ~/.ssh/known_hosts
@@ -167,16 +170,16 @@ sort -u ~/.ssh/known_hosts -o ~/.ssh/known_hosts
 nano /etc/kolla/inventory
 ```
 
-Добавляем `w1-i-node-03`:
+Добавляем новый сервер `w1-i-node-02`:
 
 ```ini
 [network]
+w1-i-node-01
 w1-i-node-02
-w1-i-node-03
 
 [compute]
+w1-i-node-01
 w1-i-node-02
-w1-i-node-03
 ```
 
 ---
@@ -186,27 +189,37 @@ w1-i-node-03
 ```bash
 # Активируем виртуальное окружение
 source ~/venv/bin/activate
+```
 
+```bash
 # Проверяем доступность всех узлов
 ansible -i /etc/kolla/inventory all -m ping
+```
 
-# Подготавливаем новый узел w1-i-node-03
-kolla-ansible -i /etc/kolla/inventory --limit w1-i-node-03 bootstrap-servers
+```bash
+# Подготавливаем новый узел w1-i-node-02
+kolla-ansible -i /etc/kolla/inventory --limit w1-i-node-02 bootstrap-servers
+```
 
+```bash
 # Проверяем конфигурацию перед развертыванием
-kolla-ansible -i /etc/kolla/inventory --limit w1-i-node-03 prechecks
+kolla-ansible -i /etc/kolla/inventory --limit w1-i-node-02 prechecks
+```
 
+```bash
 # Развертываем на всех узлах, включая новый сервер
 kolla-ansible -i /etc/kolla/inventory deploy
+```
 
-# Выводим список сервисов Compute и агентов сети
+```bash
+# Выводим список сервисов Compute и агентов сети на сервере deploy
 openstack compute service list
 openstack network agent list
 ```
 
 ---
 
-### Финальная настройка сервера w1-i-node-03
+### Финальная настройка сервера w1-i-node-02
 
 ```bash
 # Создаем группу kolla-admins и даем необходимые права
@@ -221,7 +234,7 @@ sudo usermod -aG docker $USER && newgrp docker
 
 ---
 
-Новый сервер `w1-i-node-03` подготовлен и добавлен в кластер OpenStack.
+Новый сервер `w1-i-node-02` подготовлен и добавлен в кластер OpenStack.
 
 --- 
 
