@@ -68,12 +68,11 @@ sudo timedatectl set-timezone Europe/Kiev
 
 # Настраиваем Chrony для синхронизации с другими узлами
 sudo bash -c 'cat << EOF > /etc/chrony/chrony.conf
-# Разрешаем синхронизацию времени для всех локальных сетей (частные IP-диапазоны)
-allow 10.0.0.0/8
-allow 172.16.0.0/12
-allow 192.168.0.0/16
 
-# Сервера для синхронизации с интернетом
+# Локальный сервер для синхронизации
+server w1-os-service iburst
+
+# Резервные серверы в интернете
 pool ntp.ubuntu.com         iburst maxsources 4
 pool 0.pool.ntp.org         iburst maxsources 2
 pool 1.pool.ntp.org         iburst maxsources 2
@@ -101,6 +100,9 @@ logdir /var/log/chrony
 # Запрет на внесение неправильных данных в системные часы
 maxupdateskew 100.0
 EOF'
+
+# Проверяем синхронизации времени
+sudo chronyd -Q "server w1-os-service iburst"
 
 # Включаем и запускаем Chrony
 sudo systemctl enable chrony && sudo systemctl restart chrony
