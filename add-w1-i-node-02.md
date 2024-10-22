@@ -98,6 +98,7 @@ sudo reboot
 # Настраиваем файл hosts на всех узлах
 sudo bash -c 'cat << EOF > /etc/hosts
 127.0.0.1 localhost
+10.64.92.30  w1-os-service
 10.64.92.101 w1-i-node-01
 10.64.92.102 w1-i-node-01
 10.64.92.110 os2.fiberax.online
@@ -117,7 +118,10 @@ sudo timedatectl set-timezone Europe/Kiev
 # Настраиваем Chrony для синхронизации с другими узлами
 sudo bash -c 'cat << EOF > /etc/chrony/chrony.conf
 
-# Сервера для синхронизации с интернетом
+# Локальный сервер для синхронизации
+server w1-os-service iburst
+
+# Резервные серверы в интернете
 pool ntp.ubuntu.com         iburst maxsources 4
 pool 0.pool.ntp.org         iburst maxsources 2
 pool 1.pool.ntp.org         iburst maxsources 2
