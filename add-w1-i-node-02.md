@@ -35,7 +35,7 @@ sudo visudo -c
 # Обновляем систему
 sudo apt update && sudo apt upgrade -y
 
-# Если требуется перезагрузка, выполняем её
+# Проверяем, если требуется перезагрузка, перезагрузит
 [ -f /var/run/reboot-required ] && sudo systemctl reboot
 ```
 
