@@ -154,6 +154,7 @@ sudo systemctl status chrony
 
 # Проверка состояния источников времени и текущего состояния синхронизации:
 chronyc sources && chronyc tracking
+```
 
 ### Смена пути Ephemeral Storage
 
