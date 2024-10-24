@@ -311,6 +311,8 @@ enable_fluentd: "yes"
 enable_cinder: "no"
 enable_cinder_backend_lvm: "no"
 nova_instance_datadir_volume: "/mnt/md0/nova/"
+enable_cinder: "yes"
+enable_cinder_backend_lvm: "no"
 
 ```
 ---
